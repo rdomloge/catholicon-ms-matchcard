@@ -1,0 +1,7 @@
+FROM openjdk:10.0.1-jdk-slim
+
+COPY target/catholicon-ms-matchcard.jar catholicon-ms-matchcard.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["/usr/bin/java", "-jar", "catholicon-ms-matchcard.jar"]
