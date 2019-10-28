@@ -3,11 +3,14 @@ package com.domloge.catholicon.catholiconmsmatchcard;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -21,16 +24,13 @@ public class Rubber {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-    @JoinColumn
+	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
 	private Game firstEnd;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-    @JoinColumn
+	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
 	private Game secondEnd;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-    @JoinColumn
+	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
 	private Game finalEnd;
 	
 	
@@ -99,7 +99,7 @@ public class Rubber {
 
 	@Override
 	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this, false);
+		return HashCodeBuilder.reflectionHashCode(this, "id");
 	}
 
 	@Override
