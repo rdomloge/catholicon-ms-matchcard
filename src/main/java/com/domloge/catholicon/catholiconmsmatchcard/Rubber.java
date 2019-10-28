@@ -3,13 +3,9 @@ package com.domloge.catholicon.catholiconmsmatchcard;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -25,13 +21,13 @@ public class Rubber {
 	private int id;
 	
 	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-	private Game firstEnd;
+	private Game firstGame;
 	
 	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-	private Game secondEnd;
+	private Game secondGame;
 	
 	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-	private Game finalEnd;
+	private Game finalGame;
 	
 	
 	
@@ -39,16 +35,16 @@ public class Rubber {
 		Game g = null;
 		switch(gameNum) {
 			case 1:
-				if(null == firstEnd) firstEnd = new Game();
-				g = firstEnd;
+				if(null == firstGame) firstGame = new Game();
+				g = firstGame;
 				break;
 			case 2:
-				if(null == secondEnd) secondEnd = new Game();
-				g = secondEnd;
+				if(null == secondGame) secondGame = new Game();
+				g = secondGame;
 				break;
 			case 3:
-				if(null == finalEnd) finalEnd = new Game();
-				g = finalEnd;
+				if(null == finalGame) finalGame = new Game();
+				g = finalGame;
 				break;
 			default:
 				throw new IllegalArgumentException("Invalid gameNum param: "+gameNum);
@@ -68,28 +64,28 @@ public class Rubber {
 		this.id = id;
 	}
 
-	public Game getFirstEnd() {
-		return firstEnd;
+	public Game getFirstGame() {
+		return firstGame;
 	}
 
-	public void setFirstEnd(Game firstEnd) {
-		this.firstEnd = firstEnd;
+	public void setFirstGame(Game firstGame) {
+		this.firstGame = firstGame;
 	}
 
-	public Game getSecondEnd() {
-		return secondEnd;
+	public Game getSecondGame() {
+		return secondGame;
 	}
 
-	public void setSecondEnd(Game secondEnd) {
-		this.secondEnd = secondEnd;
+	public void setSecondGame(Game secondGame) {
+		this.secondGame = secondGame;
 	}
 
-	public Game getFinalEnd() {
-		return finalEnd;
+	public Game getFinalGame() {
+		return finalGame;
 	}
 
-	public void setFinalEnd(Game finalEnd) {
-		this.finalEnd = finalEnd;
+	public void setFinalGame(Game finalGame) {
+		this.finalGame = finalGame;
 	}
 
 	@Override

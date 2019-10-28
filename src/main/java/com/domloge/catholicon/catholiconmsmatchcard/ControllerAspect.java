@@ -2,6 +2,7 @@ package com.domloge.catholicon.catholiconmsmatchcard;
 
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 
 import com.domloge.catholicon.ms.common.ScraperException;
@@ -53,13 +56,15 @@ public class ControllerAspect {
     public Object controllerMethodCall(ProceedingJoinPoint joinPoint) throws Throwable {
     	LOGGER.info("Controller '{}' called", joinPoint.getSignature());
     	Object[] args = joinPoint.getArgs();
+    	
+    	Future<?> future = null;
+    	
     	if(null != args && args.length > 0 && joinPoint.getSignature().getName().contains("executeSearch")) {
     		@SuppressWarnings("unchecked")
-			LinkedMultiValueMap<String, String> map = 
-        			(LinkedMultiValueMap<String, String>) joinPoint.getArgs()[1];
+			LinkedMultiValueMap<String, String> map = (LinkedMultiValueMap<String, String>) joinPoint.getArgs()[1];
         	List<String> list = map.get("fixtureId");
         	String fixtureIdStr = list.get(0);
-	    	exec.submit(() -> {
+	    	future = exec.submit(() -> {
 				try {
 					sync.sync(Integer.parseInt(fixtureIdStr));
 				} catch (ScraperException e) {
@@ -75,8 +80,18 @@ public class ControllerAspect {
     				+joinPoint.getSignature().getName()
     				+") - can't sync in background (maybe a call to findAll()?) ");
     	}
-        Object result = joinPoint.proceed();
-        LOGGER.debug("Returning {}", result);
-        return result;
+        
+    	Object result = joinPoint.proceed();
+        ResponseEntity<?> response = (ResponseEntity<?>) result;
+        
+        if(response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        	LOGGER.debug("Response was 404 - waiting for task to complete and executing");
+        	future.get();
+        	LOGGER.debug("Task complete - retrying");
+        	result = joinPoint.proceed();
+        }
+        
+    	LOGGER.trace("Returning {}", result);
+        return result;        	
     }
 }
