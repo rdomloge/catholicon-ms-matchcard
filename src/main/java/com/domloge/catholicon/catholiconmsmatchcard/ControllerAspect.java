@@ -53,8 +53,12 @@ public class ControllerAspect {
     public Object controllerMethodCall(ProceedingJoinPoint joinPoint) throws Throwable {
     	LOGGER.info("Controller '{}' called", joinPoint.getSignature());
     	Object[] args = joinPoint.getArgs();
-    	if(null != args && args.length > 0 && joinPoint.getSignature().getName().contains("getItemResource")) {
-	    	String fixtureIdStr = (String) args[1];
+    	if(null != args && args.length > 0 && joinPoint.getSignature().getName().contains("executeSearch")) {
+    		@SuppressWarnings("unchecked")
+			LinkedMultiValueMap<String, String> map = 
+        			(LinkedMultiValueMap<String, String>) joinPoint.getArgs()[1];
+        	List<String> list = map.get("fixtureId");
+        	String fixtureIdStr = list.get(0);
 	    	exec.submit(() -> {
 				try {
 					sync.sync(Integer.parseInt(fixtureIdStr));
@@ -67,7 +71,9 @@ public class ControllerAspect {
 			});
     	}
     	else {
-    		LOGGER.debug("No args passed to the controller method - can't sync in background (maybe a call to findAll()?) ");
+    		LOGGER.debug("No args passed to the controller method ("
+    				+joinPoint.getSignature().getName()
+    				+") - can't sync in background (maybe a call to findAll()?) ");
     	}
         Object result = joinPoint.proceed();
         LOGGER.debug("Returning {}", result);
