@@ -50,7 +50,7 @@ public class Player {
 
 	@Override
 	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this, false);
+		return HashCodeBuilder.reflectionHashCode(this, "id");
 	}
 
 	@Override
