@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -47,7 +48,24 @@ public class Matchcard {
 	
 	private int awayScore;
 	
+	/**
+	 * 
+	 * https://stackoverflow.com/questions/23409026/duplicate-entry-by-hibernate-on-join-table-in-springmvc
+	 * 
+	 * This issue is really just a result of the well documented effect of using a List without an Index column. 
+	 * This causes Hibernate to treat the List like a Bag and so deleting the join table before inserting is 
+	 * expected and necessary behaviour. Bags and their behaviour are well documented in countless blogs and 
+	 * the Hibernate documentation so I won't go into any of that here.
+	 * The solution was just to slap a @OrderColumn annotation on each collection. With this index hibernate 
+	 * no longer needs to treat the List like a Bag and so has no need to perform the delete before insert. 
+	 * So no need to use the tables of outer joins.
+	 * 
+	 * So then I added an 'order column' with the name 'order' and that broke it due to this being a reserved keyword
+	 * 
+	 * https://stackoverflow.com/questions/20152311/hibernate-table-not-found-error-on-runtime
+	 */
 	@ElementCollection(fetch = FetchType.EAGER, targetClass = Boolean.class)
+	@OrderColumn(name = "RUBBER") // this is critical to prevent issues with findById returning a list with > 2k elements
 	private List<Boolean> homeTeamWins;
 	
 	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
@@ -64,9 +82,6 @@ public class Matchcard {
 			String awayTeam, String matchDate, int homeScore, int awayScore, Boolean[] homeTeamWins,
 			boolean teamSize6, int fixtureId) {
 		
-//		for (Integer rubberNum : scoreMap.keySet()) {
-//			rubbers.put(rubberNum-1, scoreMap.get(rubberNum));
-//		}
 		rubbers.addAll(scoreMap.values());
 		this.homePlayers = new HashSet<String>(Arrays.asList(homePlayers));
 		this.awayPlayers = new HashSet<String>(Arrays.asList(awayPlayers));
@@ -200,7 +215,7 @@ public class Matchcard {
 
 	@Override
 	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this, false);
+		return HashCodeBuilder.reflectionHashCode(this, "id");
 	}
 
 	@Override
