@@ -91,7 +91,7 @@ public class ResultScraper {
 		int awayScore = Integer.parseInt(score.substring(hyphen+1).replaceAll("[^\\d.]", ""));
 		
 		Elements results = doc.select("input[id^=Result]");
-		Boolean[] homeTeamWins = new Boolean[9];
+		Boolean[] homeTeamWins = new Boolean[results.size()]; // tempting to make this fixed to len 9, but ladies matches only have 6
 		for(int i=0; i < results.size(); i++) {
 			String result = results.get(i).attr("value");
 			String rubberNumStr = results.get(i).attr("id");
