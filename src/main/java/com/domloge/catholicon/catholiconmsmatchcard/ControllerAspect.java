@@ -16,8 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.util.LinkedMultiValueMap;
 
 import com.domloge.catholicon.ms.common.ScraperException;
@@ -81,15 +80,17 @@ public class ControllerAspect {
     				+") - can't sync in background (maybe a call to findAll()?) ");
     	}
         
-    	Object result = joinPoint.proceed();
-        ResponseEntity<?> response = (ResponseEntity<?>) result;
-        
-        if(response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        	LOGGER.debug("Response was 404 - waiting for task to complete and executing");
+    	LOGGER.debug("Proxying call to target");
+    	Object result;
+    	try {
+    		result = joinPoint.proceed();
+    	}
+    	catch(ResourceNotFoundException e) {
+    		LOGGER.debug("Resource not found (might be first time) - waiting for sync task to complete and retrying");
         	future.get();
-        	LOGGER.debug("Task complete - retrying");
+        	LOGGER.debug("Sync complete - retrying");
         	result = joinPoint.proceed();
-        }
+    	}
         
     	LOGGER.trace("Returning {}", result);
         return result;        	
