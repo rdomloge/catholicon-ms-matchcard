@@ -3,10 +3,9 @@ package com.domloge.catholicon.catholiconmsmatchcard;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,7 +15,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 
@@ -36,10 +34,12 @@ public class Matchcard {
 	private int fixtureId;
 	
 	@ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
-	private Set<String> homePlayers;
+	@OrderColumn(name = "PLAYERORDER")
+	private List<String> homePlayers;
 	
 	@ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
-	private Set<String> awayPlayers;
+	@OrderColumn(name = "PLAYERORDER")
+	private List<String> awayPlayers;
 	
 	private String homeTeamName;
 	
@@ -70,8 +70,8 @@ public class Matchcard {
 	private List<Boolean> homeTeamWins;
 	
 	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-    @JoinColumn
-	private Set<Rubber> rubbers = new HashSet<Rubber>();
+	@OrderColumn(name = "RUBBER")
+	private List<Rubber> rubbers = new LinkedList<Rubber>();
 	
 	private boolean teamSize6;
 
@@ -84,8 +84,8 @@ public class Matchcard {
 			boolean teamSize6, int fixtureId) {
 		
 		rubbers.addAll(scoreMap.values());
-		this.homePlayers = new HashSet<String>(Arrays.asList(homePlayers));
-		this.awayPlayers = new HashSet<String>(Arrays.asList(awayPlayers));
+		this.homePlayers = Arrays.asList(homePlayers);
+		this.awayPlayers = Arrays.asList(awayPlayers);
 		this.homeTeamName = homeTeam;
 		this.awayTeamName = awayTeam;
 		this.matchDate = convertDayMonthYearToYearMonthDay(matchDate);
@@ -137,19 +137,19 @@ public class Matchcard {
 		this.fixtureId = fixtureId;
 	}
 
-	public Set<String> getHomePlayers() {
+	public List<String> getHomePlayers() {
 		return homePlayers;
 	}
 
-	public void setHomePlayers(Set<String> homePlayers) {
+	public void setHomePlayers(List<String> homePlayers) {
 		this.homePlayers = homePlayers;
 	}
 
-	public Set<String> getAwayPlayers() {
+	public List<String> getAwayPlayers() {
 		return awayPlayers;
 	}
 
-	public void setAwayPlayers(Set<String> awayPlayers) {
+	public void setAwayPlayers(List<String> awayPlayers) {
 		this.awayPlayers = awayPlayers;
 	}
 
@@ -193,11 +193,11 @@ public class Matchcard {
 		this.homeTeamWins = homeTeamWins;
 	}
 
-	public Set<Rubber> getRubbers() {
+	public List<Rubber> getRubbers() {
 		return rubbers;
 	}
 
-	public void setRubbers(Set<Rubber> rubbers) {
+	public void setRubbers(List<Rubber> rubbers) {
 		this.rubbers = rubbers;
 	}
 
