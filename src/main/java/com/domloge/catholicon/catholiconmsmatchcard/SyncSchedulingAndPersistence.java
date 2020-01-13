@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.domloge.catholicon.ms.common.Diff;
+import com.domloge.catholicon.ms.common.Loader;
 import com.domloge.catholicon.ms.common.ScraperException;
 import com.domloge.catholicon.ms.common.Sync;
 
@@ -36,8 +39,10 @@ public class SyncSchedulingAndPersistence {
 	@Value("${SEASONS_SVC_BASE_URL:http://catholicon-ms-seasons-service:81}")
 	private String SEASONS_SVC_BASE_URL;
 	
-	@Value("${DIVISIONS_SVC_BASE_URL:http://catholicon-service}")
-	private String DIVISIONS_SVC_BASE_URL;
+	@Value("${DIVISION_TEAMS_URL:http://bdbl.org.uk/Division.asp?LeagueTypeID=%d&Division=%d&Season=%d&Juniors=false&Schools=false&Website=1}")
+	private String DIVISION_TEAMS_URL;
+	
+	public static final Pattern teamPatternExp = Pattern.compile("teamList\\[\"([0-9]+)\"\\].*clubName:\"([^\"]+)\"");
 
 	@Autowired
 	private FixtureScraper fixtureScraper;
@@ -108,22 +113,35 @@ public class SyncSchedulingAndPersistence {
 			LOGGER.error("Failed to sync fixtures", e);
 		}
 	}
+
+	@Autowired
+	private Loader loader;
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void loadTeamsForDivision(int seasonApiIdentifier, int leagueTypeId, int divisionId) throws ScraperException {
-		//"http://rdomloge.entrydns.org/season/0/league/25/division/56"
-		String url = String.format(DIVISIONS_SVC_BASE_URL+"/season/%d/league/%d/division/%d", 
-				seasonApiIdentifier, 
+		// http://bdbl.org.uk/Division.asp?LeagueTypeID=26&Division=59&Season=0&Juniors=false&Schools=false&Website=1
+		String url = String.format(DIVISION_TEAMS_URL, 
 				leagueTypeId, 
-				divisionId);
-		
-		Map division = seasonsTemplate.getForObject(url, Map.class);
-		List<LinkedHashMap> positions = (List<LinkedHashMap>) division.get("positions");
-		LOGGER.info("Found {} teams", positions.size());
-		for (LinkedHashMap team : positions) {
-			
-			syncDivision((int) team.get("teamId"), seasonApiIdentifier);
+				divisionId, 
+				seasonApiIdentifier);
+
+		String page = loader.load(url);
+		// teamList["377"] = {teamID:377,clubName:"Andover",clubID:3};
+		Matcher m = teamPatternExp.matcher(page);
+		while(m.find()) {
+			String teamId = m.group(1);
+			String teamName = m.group(2);
+			LOGGER.info("Synching devision for team {}({}), for season {}", teamName, teamId, seasonApiIdentifier);
+			syncDivision(Integer.parseInt(teamId), seasonApiIdentifier);
 		}
+		
+		// Map division = seasonsTemplate.getForObject(url, Map.class);
+		// List<LinkedHashMap> positions = (List<LinkedHashMap>) division.get("positions");
+		// LOGGER.info("Found {} teams", positions.size());
+		// for (LinkedHashMap team : positions) {
+			
+		// 	syncDivision((int) team.get("teamId"), seasonApiIdentifier);
+		// }
 	}
 	
 	
