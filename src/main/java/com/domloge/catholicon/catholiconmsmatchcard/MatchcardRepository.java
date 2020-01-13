@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 public interface MatchcardRepository extends PagingAndSortingRepository<Matchcard, Integer> {
 
 	Matchcard findByFixtureId(int fixtureId);
-
+	
 }
