@@ -25,9 +25,11 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 				@ColumnResult(name = "division_id", type = Integer.class),
 				@ColumnResult(name = "away_score", type = Integer.class),
 				@ColumnResult(name = "away_team_name", type = String.class),
+				@ColumnResult(name = "away_team_id", type = Integer.class),
 				@ColumnResult(name = "fixture_id", type = Integer.class),
 				@ColumnResult(name = "home_score", type = Integer.class),
 				@ColumnResult(name = "home_team_name", type = String.class),
+				@ColumnResult(name = "home_team_id", type = Integer.class),
 				@ColumnResult(name = "match_date", type = String.class),
 				@ColumnResult(name = "team_size6", type = Boolean.class),
 		} )
@@ -44,23 +46,28 @@ public class DivisionReportDataItem {
 	
 	private String away_team_name;
 	
+	private int away_team_id;
+	
 	private int fixture_id;
 	
 	private int home_score;
 	
 	private String home_team_name;
 	
+	private int home_team_id;
+	
 	private String match_date;
 	
 	private boolean team_size6;
 	
 
-	public DivisionReportDataItem(int division_id, int away_score, String away_team_name, int fixture_id,
-			int home_score, String home_team_name, String match_date, boolean team_size6) {
+	public DivisionReportDataItem(int division_id, int away_score, String away_team_name, int away_team_id, int fixture_id,
+			int home_score, String home_team_name, int home_team_id, String match_date, boolean team_size6) {
 		super();
 		this.division_id = division_id;
 		this.away_score = away_score;
 		this.away_team_name = away_team_name;
+		this.away_team_id = away_team_id;
 		this.fixture_id = fixture_id;
 		this.home_score = home_score;
 		this.home_team_name = home_team_name;
@@ -138,6 +145,22 @@ public class DivisionReportDataItem {
 
 	public void setTeam_size6(boolean team_size6) {
 		this.team_size6 = team_size6;
+	}
+
+	public int getAway_team_id() {
+		return away_team_id;
+	}
+
+	public void setAway_team_id(int away_team_id) {
+		this.away_team_id = away_team_id;
+	}
+
+	public int getHome_team_id() {
+		return home_team_id;
+	}
+
+	public void setHome_team_id(int home_team_id) {
+		this.home_team_id = home_team_id;
 	}
 
 	@Override

@@ -4,14 +4,17 @@ public class DivisionReportLine {
 	
 	private String teamName;
 	
+	private int teamId;
+	
 	private int rubbers_won, rubbers_lost;
 	
 	private int matches_played, matches_won;
 	
 	
-	public DivisionReportLine(String teamName) {
+	public DivisionReportLine(String teamName, int teamId) {
 		super();
 		this.teamName = teamName;
+		this.teamId = teamId;
 	}
 
 	public String getTeamName() {
@@ -34,13 +37,17 @@ public class DivisionReportLine {
 		return matches_won;
 	}
 	
+	public int getTeamId() {
+		return teamId;
+	}
+
 	public void process(DivisionReportDataItem item) {
 		boolean homeTeam = item.getHome_team_name().equals(teamName);
 		
 		if(homeTeam) {
 			rubbers_won += item.getHome_score();
 			rubbers_lost += item.getAway_score();
-			matches_won += (item.getHome_score() > item.getAway_score() ? 1 : 0); 
+			matches_won += (item.getHome_score() > item.getAway_score() ? 1 : 0);
 		}
 		else {
 			rubbers_won += item.getAway_score();

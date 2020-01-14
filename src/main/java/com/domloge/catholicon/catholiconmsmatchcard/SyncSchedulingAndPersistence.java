@@ -39,7 +39,7 @@ public class SyncSchedulingAndPersistence {
 	@Value("${SEASONS_SVC_BASE_URL:http://catholicon-ms-seasons-service:81}")
 	private String SEASONS_SVC_BASE_URL;
 	
-	@Value("${DIVISION_TEAMS_URL:http://bdbl.org.uk/Division.asp?LeagueTypeID=%d&Division=%d&Season=%d&Juniors=false&Schools=false&Website=1}")
+	@Value("${DIVISION_TEAMS_URL:/Division.asp?LeagueTypeID=%d&Division=%d&Season=%d&Juniors=false&Schools=false&Website=1}")
 	private String DIVISION_TEAMS_URL;
 	
 	public static final Pattern teamPatternExp = Pattern.compile("teamList\\[\"([0-9]+)\"\\].*clubName:\"([^\"]+)\"");
@@ -134,14 +134,6 @@ public class SyncSchedulingAndPersistence {
 			LOGGER.info("Synching devision for team {}({}), for season {}", teamName, teamId, seasonApiIdentifier);
 			syncDivision(Integer.parseInt(teamId), seasonApiIdentifier);
 		}
-		
-		// Map division = seasonsTemplate.getForObject(url, Map.class);
-		// List<LinkedHashMap> positions = (List<LinkedHashMap>) division.get("positions");
-		// LOGGER.info("Found {} teams", positions.size());
-		// for (LinkedHashMap team : positions) {
-			
-		// 	syncDivision((int) team.get("teamId"), seasonApiIdentifier);
-		// }
 	}
 	
 	

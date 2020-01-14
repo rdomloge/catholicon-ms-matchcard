@@ -20,7 +20,7 @@ public class DivisionReportRepository {
 	public List<DivisionReportDataItem> buildDivisionReport(int divisionId) {
 		
 		Query query = entityManager.createNativeQuery(
-				"select f.division_id, m.* "
+				"select f.division_id, f.home_team_id, f.away_team_id, m.* "
 				+ "from matchcard m "
 				+ "left outer join fixture f on f.fixture_id=m.fixture_id "
 				+ "where f.division_id=?", 

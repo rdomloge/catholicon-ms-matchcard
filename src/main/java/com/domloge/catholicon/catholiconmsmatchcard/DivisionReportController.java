@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,7 +25,7 @@ public class DivisionReportController {
 	private DivisionReportRepository divisionReportRepository;
 	
 	@RequestMapping("/divisions/{divisionId}/report")
-	public DivisionReport getReportForDivision(@PathVariable int divisionId) {
+	public DivisionReport getReportForDivision(@PathVariable int divisionId, @RequestParam("season") int season) {
 		
 		Map<String, DivisionReportLine> map = new HashMap<>();
 		
@@ -33,11 +34,11 @@ public class DivisionReportController {
 		for (DivisionReportDataItem item : divisionReportDataItems) {
 			LOGGER.debug("Found a match result[{}]: {}", item.getClass().getSimpleName(), item);
 			if( ! map.containsKey(item.getAway_team_name())) {
-				map.put(item.getAway_team_name(), new DivisionReportLine(item.getAway_team_name()));
+				map.put(item.getAway_team_name(), new DivisionReportLine(item.getAway_team_name(), item.getAway_team_id()));
 			}
 			
 			if( ! map.containsKey(item.getHome_team_name())) {
-				map.put(item.getHome_team_name(), new DivisionReportLine(item.getHome_team_name()));
+				map.put(item.getHome_team_name(), new DivisionReportLine(item.getHome_team_name(), item.getHome_team_id()));
 			}
 			
 			map.get(item.getAway_team_name()).process(item);
@@ -56,7 +57,7 @@ public class DivisionReportController {
 		for (int i = 0; i < keyArr.length; i++) {
 			lines[i] = map.get(keyArr[i]);
 		}
-		return new DivisionReport(lines);
+		return new DivisionReport(lines, season);
 	}
 	
 }
