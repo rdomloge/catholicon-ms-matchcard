@@ -102,7 +102,7 @@ public class ResultScraper {
 		Matchcard m =  new Matchcard(scoreMap, homePlayers, awayPlayers, homeTeam, awayTeam, matchDate, 
 				homeScore, awayScore, homeTeamWins, newUrl.contains("MatchCard6.asp"), fixtureId);
 		
-		LOGGER.debug("Scraped matchcard: {}", m);
+		LOGGER.debug("Scraped matchcard: {}", m.getFixtureId());
 		
 		return m;
 	}

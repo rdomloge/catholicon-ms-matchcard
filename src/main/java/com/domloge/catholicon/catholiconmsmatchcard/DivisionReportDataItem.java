@@ -71,6 +71,7 @@ public class DivisionReportDataItem {
 		this.fixture_id = fixture_id;
 		this.home_score = home_score;
 		this.home_team_name = home_team_name;
+		this.home_team_id = home_team_id;
 		this.match_date = match_date;
 		this.team_size6 = team_size6;
 	}

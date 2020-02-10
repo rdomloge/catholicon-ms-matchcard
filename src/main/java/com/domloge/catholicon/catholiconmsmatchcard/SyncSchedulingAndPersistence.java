@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -110,7 +113,8 @@ public class SyncSchedulingAndPersistence {
 			LOGGER.info("Sync complete");
 		}
 		catch(Exception e) {
-			LOGGER.error("Failed to sync fixtures", e);
+			Optional<Exception> optE = Optional.ofNullable(e);
+			optE.ifPresent(ex -> LOGGER.error("Failed to sync fixtures ("+ex.getClass().getName()+")", ex));
 		}
 	}
 
@@ -142,8 +146,15 @@ public class SyncSchedulingAndPersistence {
 		
 		List<Fixture> masterFixtures = fixtureScraper.load(teamId, season);
 		LOGGER.debug("Scrape complete (found {} fixtures)", masterFixtures.size());
+		for (Fixture masterFixture : masterFixtures) {
+			LOGGER.debug("Master fixture ID {}", masterFixture.getFixtureId());
+		}
 		
 		List<Fixture> dbFixtures = fixtureRepository.findByHomeTeamIdOrAwayTeamIdAndSeason(teamId, teamId, season);
+		LOGGER.debug("Loaded DB {} fixtures", dbFixtures.size());
+		for (Fixture dbFixture : dbFixtures) {
+			LOGGER.debug("DB fixture ID {}", dbFixture.getFixtureId());
+		}
 		Diff<Fixture> compare = fixtureSync.compare(mapFixtures(masterFixtures), mapFixtures(dbFixtures));
 		
 		LOGGER.debug("Compare complete");
@@ -172,8 +183,15 @@ public class SyncSchedulingAndPersistence {
 			try {
 				fixtureRepository.save(f);
 			}
-			catch(HibernateException hex) {
-				LOGGER.error("failed to update fixture "+f, hex);
+			catch(DataIntegrityViolationException divex) {
+				LOGGER.error("failed to update fixture "+f, divex);
+				for (Fixture fixture : dbFixtures) {
+					if(fixture.getFixtureId() == f.getFixtureId()) {
+						LOGGER.info("Found matching DB fixture {}", fixture);
+						LOGGER.info("And here's the master fixture again {}", f);
+					}
+				}
+				throw new ScraperException("GOTO");
 			}
 			LOGGER.debug("Update {}", f);
 		}

@@ -51,6 +51,10 @@ public class FixtureScraper {
 			String fixtureJson = fixtureMatcher.group(1);
 			Map<String, String> fixtureMap = ParserUtil.convertJsonToMap(fixtureJson);
 			int fixtureId = Integer.parseInt(fixtureMap.get("fixtureID"));
+			if(0 == fixtureId) {
+				LOGGER.warn("Ignoring fixture for season {} for team {} with zero id: {}", season, teamId, fixtureJson);
+				continue;
+			}
 			Matchcard matchcard = null;
 			try {
 				matchcard = resultScraper.loadMatchcard(fixtureId);
@@ -68,7 +72,7 @@ public class FixtureScraper {
 					divisionId,
 					matchcard,
 					season);
-			LOGGER.debug("Found fixture {}", f);
+			LOGGER.debug("Found fixture {}", f.getFixtureId());
 			list.add(f);
 		}
 		
