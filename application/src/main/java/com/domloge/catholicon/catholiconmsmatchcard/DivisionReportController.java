@@ -7,6 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.domloge.catholiconmsmatchcardlibrary.DivisionReport;
+import com.domloge.catholiconmsmatchcardlibrary.DivisionReportDataItem;
+import com.domloge.catholiconmsmatchcardlibrary.DivisionReportLine;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +36,6 @@ public class DivisionReportController {
 		List<DivisionReportDataItem> divisionReportDataItems = divisionReportRepository.buildDivisionReport(divisionId);
 		
 		for (DivisionReportDataItem item : divisionReportDataItems) {
-			LOGGER.debug("Found a match result[{}]: {}", item.getClass().getSimpleName(), item);
 			if( ! map.containsKey(item.getAway_team_name())) {
 				map.put(item.getAway_team_name(), new DivisionReportLine(item.getAway_team_name(), item.getAway_team_id()));
 			}

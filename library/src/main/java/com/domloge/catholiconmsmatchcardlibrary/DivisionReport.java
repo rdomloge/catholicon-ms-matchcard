@@ -1,4 +1,4 @@
-package com.domloge.catholicon.catholiconmsmatchcard;
+package com.domloge.catholiconmsmatchcardlibrary;
 
 public class DivisionReport {
 	

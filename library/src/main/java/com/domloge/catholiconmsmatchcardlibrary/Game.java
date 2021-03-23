@@ -1,4 +1,4 @@
-package com.domloge.catholicon.catholiconmsmatchcard;
+package com.domloge.catholiconmsmatchcardlibrary;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -59,7 +59,7 @@ public class Game {
 	
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 
 	@Override

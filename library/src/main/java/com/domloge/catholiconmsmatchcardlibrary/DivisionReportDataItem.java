@@ -1,4 +1,4 @@
-package com.domloge.catholicon.catholiconmsmatchcard;
+package com.domloge.catholiconmsmatchcardlibrary;
 
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
