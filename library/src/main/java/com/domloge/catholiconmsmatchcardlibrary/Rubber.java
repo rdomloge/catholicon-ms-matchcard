@@ -1,4 +1,4 @@
-package com.domloge.catholicon.catholiconmsmatchcard;
+package com.domloge.catholiconmsmatchcardlibrary;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -20,13 +20,13 @@ public class Rubber {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
-	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval = true)
 	private Game firstGame;
 	
-	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval = true)
 	private Game secondGame;
 	
-	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval = true)
 	private Game finalGame;
 	
 	
@@ -90,7 +90,7 @@ public class Rubber {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 
 	@Override

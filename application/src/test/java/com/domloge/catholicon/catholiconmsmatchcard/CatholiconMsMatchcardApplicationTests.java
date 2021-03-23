@@ -1,51 +1,49 @@
 package com.domloge.catholicon.catholiconmsmatchcard;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import com.domloge.catholiconmsmatchcardlibrary.Fixture;
+import com.domloge.catholiconmsmatchcardlibrary.Matchcard;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.domloge.catholicon.ms.common.ScraperException;
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+// @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CatholiconMsMatchcardApplicationTests {
 
 	@Autowired
-	private SyncSchedulingAndPersistence ssap;
-	
+	private FixtureRepository fixtureRepository;
+
 	@Autowired
-	private MatchcardRepository matchcardRepo;
-	
-	@Autowired
-	private FixtureRepository fixtureRepo;
-	
-	@Autowired
-	private FixtureScraper scraper;
+	private ObjectMapper mapper;
 
 	@Test
 	public void contextLoads() {
 	}
-	
+
 	@Test
-	public void contextLoadsTwice() {
+	public void saveFixtureWithMatchcard() throws JsonProcessingException {
+		Fixture f = new Fixture();
+		f.setExternalFixtureId(1234);
+		Matchcard m = new Matchcard();
+		m.setAwayScore(3);
+		m.setHomeScore(6);
+		f.setMatchCard(m);
+		byte[] bytes = mapper.writeValueAsBytes(f);
+		System.out.println("Serialised to "+new String(bytes));
+
+		Fixture saved = fixtureRepository.save(f);
+		System.out.println("This is the saved entity: "+saved);
 	}
+	
+	// @Test
+	// public void contextLoadsTwice() {
+	// }
 	
 //	@Test
 //	@DirtiesContext
@@ -166,16 +164,16 @@ public class CatholiconMsMatchcardApplicationTests {
 //		assertEquals(9, matchcard.getHomeTeamWins().size());
 //	}
 	
-	@Test 
-	@DirtiesContext
-	public void basicPersistenceTest() {
-		Matchcard m = new Matchcard();
-		m.setAwayTeamName("hometeam");
-		m.setFixtureId(1);
-		matchcardRepo.save(m);
-		Matchcard matchcard = matchcardRepo.findByFixtureId(1);
-		assertEquals("hometeam", matchcard.getAwayTeamName());
-	}
+	// @Test 
+	// @DirtiesContext
+	// public void basicPersistenceTest() {
+	// 	Matchcard m = new Matchcard();
+	// 	m.setAwayTeamName("hometeam");
+	// 	m.setFixtureId(1);
+	// 	matchcardRepo.save(m);
+	// 	Matchcard matchcard = matchcardRepo.findByFixtureId(1);
+	// 	assertEquals("hometeam", matchcard.getAwayTeamName());
+	// }
 	
 //	@Test
 //	@DirtiesContext

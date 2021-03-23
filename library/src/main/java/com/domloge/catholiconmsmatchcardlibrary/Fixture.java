@@ -1,12 +1,18 @@
-package com.domloge.catholicon.catholiconmsmatchcard;
+package com.domloge.catholiconmsmatchcardlibrary;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -14,14 +20,19 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
+@Table(name = "fixture", indexes = {
+	@Index(columnList = "externalFixtureId"),
+	@Index(columnList = "divisionId"),
+	@Index(columnList = "season")
+})
 public class Fixture {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
-	
+
 	@Column(unique=true)
-	private int fixtureId;
+	private int externalFixtureId;
 	
 	private int divisionId;
 	
@@ -31,7 +42,9 @@ public class Fixture {
 	
 	private int awayTeamId;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "matchcard_id", referencedColumnName = "id")
 	private Matchcard matchCard;
 	
 	private int season;
@@ -40,8 +53,8 @@ public class Fixture {
 	public Fixture() {
 	}
 
-	public Fixture(int fixtureId, String matchDate, int homeTeamId, int awayTeamId, int divisionId, Matchcard card, int season) {
-		this.fixtureId = fixtureId;
+	public Fixture(int externalFixtureId, String matchDate, int homeTeamId, int awayTeamId, int divisionId, Matchcard card, int season) {
+		this.externalFixtureId = externalFixtureId;
 		this.divisionId = divisionId;
 		this.matchDate = matchDate;
 		this.homeTeamId = homeTeamId;
@@ -57,13 +70,13 @@ public class Fixture {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	public int getFixtureId() {
-		return fixtureId;
+
+	public int getExternalFixtureId() {
+		return externalFixtureId;
 	}
-	
-	public void setFixtureId(int fixtureId) {
-		this.fixtureId = fixtureId;
+
+	public void setExternalFixtureId(int newInt) {
+		this.externalFixtureId = newInt;
 	}
 	
 	public int getDivisionId() {

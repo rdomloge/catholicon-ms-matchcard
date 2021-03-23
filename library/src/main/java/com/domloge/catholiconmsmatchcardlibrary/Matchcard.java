@@ -1,4 +1,4 @@
-package com.domloge.catholicon.catholiconmsmatchcard;
+package com.domloge.catholiconmsmatchcardlibrary;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,15 +8,20 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -24,20 +29,27 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
+@Table(name = "matchcard", indexes = {
+	@Index(columnList = "status")
+})
 public class Matchcard {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
-	@Column(unique=true)
-	private int fixtureId;
+	// @Column(unique=true)
+	// private int fixtureId;
+	// @OneToOne(mappedBy = "matchCard")
+	// private Fixture fixture;
 	
-	@ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+	@ElementCollection(fetch = FetchType.LAZY, targetClass = String.class)
 	@OrderColumn(name = "PLAYERORDER")
 	private List<String> homePlayers;
 	
-	@ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+	@ElementCollection(fetch = FetchType.LAZY, targetClass = String.class)
 	@OrderColumn(name = "PLAYERORDER")
 	private List<String> awayPlayers;
 	
@@ -48,6 +60,9 @@ public class Matchcard {
 	private String awayTeamName;
 	
 	private int awayScore;
+
+	@Enumerated(EnumType.STRING)
+	private MatchcardStatus status;
 	
 	/**
 	 * 
@@ -65,11 +80,13 @@ public class Matchcard {
 	 * 
 	 * https://stackoverflow.com/questions/20152311/hibernate-table-not-found-error-on-runtime
 	 */
-	@ElementCollection(fetch = FetchType.EAGER, targetClass = Boolean.class)
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+	 @ElementCollection(fetch = FetchType.LAZY, targetClass = Boolean.class)
 	@OrderColumn(name = "RUBBER") // this is critical to prevent issues with findById returning a list with > 2k elements
 	private List<Boolean> homeTeamWins;
 	
-	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, orphanRemoval = true)
 	@OrderColumn(name = "RUBBER")
 	private List<Rubber> rubbers = new LinkedList<Rubber>();
 	
@@ -81,7 +98,7 @@ public class Matchcard {
 	
 	public Matchcard(Map<Integer, Rubber> scoreMap, String[] homePlayers, String[] awayPlayers, String homeTeam,
 			String awayTeam, String matchDate, int homeScore, int awayScore, Boolean[] homeTeamWins,
-			boolean teamSize6, int fixtureId) {
+			boolean teamSize6, Fixture fixture, MatchcardStatus status) {
 		
 		rubbers.addAll(scoreMap.values());
 		this.homePlayers = Arrays.asList(homePlayers);
@@ -95,7 +112,7 @@ public class Matchcard {
 		
 		this.homeTeamWins = Arrays.asList(homeTeamWins);
 		this.teamSize6 = teamSize6;
-		this.fixtureId = fixtureId;
+		this.status = status;
 	}
 	
 	public Matchcard() {
@@ -129,13 +146,14 @@ public class Matchcard {
 		this.matchDate = matchDate;
 	}
 	
-	public int getFixtureId() {
-		return fixtureId;
-	}
+	// @JsonIgnore
+	// public Fixture getFixture() {
+	// 	return fixture;
+	// }
 
-	public void setFixtureId(int fixtureId) {
-		this.fixtureId = fixtureId;
-	}
+	// public void setFixture(Fixture fixture) {
+	// 	this.fixture = fixture;
+	// }
 
 	public List<String> getHomePlayers() {
 		return homePlayers;
@@ -209,9 +227,17 @@ public class Matchcard {
 		this.teamSize6 = teamSize6;
 	}
 
+	public MatchcardStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(MatchcardStatus status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 
 	@Override
