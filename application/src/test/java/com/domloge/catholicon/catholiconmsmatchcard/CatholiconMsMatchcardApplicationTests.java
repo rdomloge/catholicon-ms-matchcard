@@ -1,14 +1,22 @@
 package com.domloge.catholicon.catholiconmsmatchcard;
 
+import java.util.List;
+
+import com.domloge.catholiconmsmatchcardlibrary.DivisionReportDataItemProjection;
 import com.domloge.catholiconmsmatchcardlibrary.Fixture;
+import com.domloge.catholiconmsmatchcardlibrary.FixtureResultProjection;
 import com.domloge.catholiconmsmatchcardlibrary.Matchcard;
+import com.domloge.catholiconmsmatchcardlibrary.MatchcardStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -22,8 +30,24 @@ public class CatholiconMsMatchcardApplicationTests {
 	@Autowired
 	private ObjectMapper mapper;
 
+	// @Autowired
+	// private ApplicationContext ctx;
+
 	@Test
 	public void contextLoads() {
+		// String[] names = ctx.getBeanDefinitionNames();
+		// for (String name : names) {
+		// 	System.out.println("> "+name);
+		// }
+	}
+
+	@Test
+	public void nullDatePatternValidation() {
+		Fixture f = new Fixture();
+		fixtureRepository.save(f);
+
+		// f.setMatchDate("not valid");
+		// fixtureRepository.save(f);
 	}
 
 	@Test
@@ -40,148 +64,81 @@ public class CatholiconMsMatchcardApplicationTests {
 		Fixture saved = fixtureRepository.save(f);
 		System.out.println("This is the saved entity: "+saved);
 	}
+
+	@Test
+	public void loadDivisionReport() {
+		Fixture f = new Fixture();
+		f.setExternalFixtureId(1234);
+		f.setDivisionId(1);
+		f.setHomeTeamName("Division report home team");
+		f.setAwayTeamName("Division report away team");
+		Matchcard m = new Matchcard();
+		m.setAwayScore(2);
+		m.setHomeScore(7);
+		f.setMatchCard(m);
+		fixtureRepository.save(f);
+
+		Fixture wrongF = new Fixture();
+		wrongF.setExternalFixtureId(4321);
+		wrongF.setDivisionId(17);
+		Matchcard wrongM = new Matchcard();
+		wrongM.setAwayScore(9);
+		wrongM.setHomeScore(0);
+		wrongF.setMatchCard(wrongM);
+		fixtureRepository.save(wrongF);
+
+		FixtureResultProjection[] loadedFix = fixtureRepository.findByDivisionId(1);
+		Assert.assertEquals("Fixture did not save!", 1, loadedFix.length);
+		System.out.println("Saved (& retrieved) fixture: "+loadedFix);
+		
+		List<DivisionReportDataItemProjection> items = fixtureRepository.buildDivisionReport(1);
+		Assert.assertEquals("Wrong number of data items", 1, items.size());
+	}
+
+	@Test
+	public void findUnconfirmedMatchcardsBySeason() {
+		Fixture fUnplayed = new Fixture();
+		fUnplayed.setSeason(0);
+		fUnplayed.setExternalFixtureId(1234);
+		fixtureRepository.save(fUnplayed);
+
+		Fixture fUnconfirmed = new Fixture();
+		fUnconfirmed.setSeason(0);
+		fUnconfirmed.setExternalFixtureId(4321);
+		Matchcard m = new Matchcard();
+		m.setAwayScore(3);
+		m.setHomeScore(6);
+		m.setStatus(MatchcardStatus.UNCONFIRMED);
+		fUnconfirmed.setMatchCard(m);
+		fixtureRepository.save(fUnconfirmed);
+
+		Fixture fUnconfirmedWrongSeason = new Fixture();
+		fUnconfirmedWrongSeason.setSeason(1);
+		fUnconfirmedWrongSeason.setExternalFixtureId(7);
+		Matchcard mWrongSeason = new Matchcard();
+		mWrongSeason.setAwayScore(3);
+		mWrongSeason.setHomeScore(6);
+		mWrongSeason.setStatus(MatchcardStatus.UNCONFIRMED);
+		fUnconfirmedWrongSeason.setMatchCard(mWrongSeason);
+		fixtureRepository.save(fUnconfirmedWrongSeason);
+
+		Fixture fConfirmed = new Fixture();
+		fConfirmed.setSeason(0);
+		fConfirmed.setExternalFixtureId(6789);
+		Matchcard mConfirmed = new Matchcard();
+		mConfirmed.setAwayScore(1);
+		mConfirmed.setHomeScore(8);
+		mConfirmed.setStatus(MatchcardStatus.CONFIRMED);
+		fConfirmed.setMatchCard(mConfirmed);
+		fixtureRepository.save(fConfirmed);
+
+		System.out.println("Should get "+fixtureRepository.findByExternalFixtureId(4321));
+		Assert.assertEquals(1, fixtureRepository.findUnconfirmedMatchcardsBySeason(0).size());
+	}
 	
-	// @Test
-	// public void contextLoadsTwice() {
-	// }
+	@Test
+	public void contextLoadsTwice() {
+	}
 	
-//	@Test
-//	@DirtiesContext
-//	public void loadFixtureWithMatchCardThenDeleteMatchCard() throws ScraperException {
-//		ssap.syncMatchcard(2361);
-//		Matchcard matchcard = matchcardRepo.findByFixtureId(2361);
-//		assertNotNull(matchcard);
-//		ssap.syncDivision(355, 0);
-//		matchcard = matchcardRepo.findByFixtureId(2361);
-//		assertNotNull(matchcard);
-//		Fixture fixture = fixtureRepo.findByFixtureId(matchcard.getFixtureId());
-//		assertEquals(fixture.getMatchCard(), matchcard);
-//	}
-	
-//	@Test
-//	@DirtiesContext
-//	public void loadFixtures() throws ScraperException {
-//		scraper.load(355, 0);
-//	}
-//	
-//	@Test
-//	@DirtiesContext
-//	public void repoFixtureReturn() throws ScraperException, InterruptedException {
-//		
-//		Fixture fixture1 = fixtureRepo.findById(2352).orElseGet(new Supplier<Fixture>() {
-//			@Override
-//			public Fixture get() {
-//				return null;
-//			}});
-//		assertNull(fixture1);
-//		
-//		ssap.syncDivision(355, 0);
-//		
-//		Fixture fixture2 = fixtureRepo.findByFixtureId(2341);
-//		assertNotNull(fixture2);
-//	}
-//	
-//	@Test
-//	@DirtiesContext
-//	public void testSynchingDivision() throws ScraperException {
-//		
-//		ssap.syncDivision(355, 0);
-//		Iterable<Fixture> all = fixtureRepo.findAll();
-//		List<Fixture> fixtures = StreamSupport.stream(all.spliterator(), false).collect(Collectors.toList());
-//		assertEquals(12, fixtures.size());
-//	}
-	
-//	@Test
-//	@DirtiesContext
-//	public void testPlayerNameOrdering() throws ScraperException {
-//		ssap.syncMatchcard(2357);
-//		Matchcard matchcard = matchcardRepo.findByFixtureId(2357);
-//		
-//		String[] homePlayers = matchcard.getHomePlayers().stream().toArray(String[] :: new);
-//		assertEquals("A. Turner", homePlayers[0]);
-//		assertEquals("N. Reid", homePlayers[1]);
-//		
-//		assertEquals("R. Clayburn", homePlayers[2]);
-//		assertEquals("M. Challa", homePlayers[3]);
-//		
-//		assertEquals("W. Johnson", homePlayers[4]);
-//		assertEquals("R. Domloge", homePlayers[5]);
-//		
-//		String[] awayPlayers = matchcard.getAwayPlayers().stream().toArray(String[] :: new);
-//		assertEquals("J. Li", awayPlayers[0]);
-//		assertEquals("T. Hunt", awayPlayers[1]);
-//		
-//		assertEquals("J. Purser", awayPlayers[2]);
-//		assertEquals("K. Miles", awayPlayers[3]);
-//		
-//		assertEquals("T. Hicks", awayPlayers[4]);
-//		assertEquals("I. Small", awayPlayers[5]);
-//	}
-//	
-//	@Test
-//	@DirtiesContext
-//	public void knownIssueWithDuplicates() throws ScraperException {
-//		ssap.syncMatchcard(2211);
-//		matchcardRepo.findByFixtureId(2211);
-//		ssap.syncMatchcard(2211);
-//		matchcardRepo.findByFixtureId(2211);
-//	}
-//	
-//	@Test
-//	@DirtiesContext
-//	public void testRubberOrder() throws ScraperException {
-//		ssap.syncMatchcard(2298);
-//		Matchcard card = matchcardRepo.findByFixtureId(2298);
-//		List<Rubber> rubbers = card.getRubbers();
-//		Iterator<Rubber> itr = rubbers.iterator();
-//		assertTrue(itr.hasNext());
-//		Rubber rubber = itr.next();
-//		assertEquals(20, rubber.getFirstGame().getHomeScore());
-//		assertEquals(22, rubber.getFirstGame().getAwayScore());
-//	}
-//	
-//	@Test
-//	@DirtiesContext
-//	public void repoReturn() throws ScraperException, InterruptedException {
-//		
-//		Matchcard matchCard1 = matchcardRepo.findByFixtureId(2168);
-//		assertNull(matchCard1);
-//		
-//		ssap.syncMatchcard(2168);
-//		
-//		Matchcard matchCard2 = matchcardRepo.findByFixtureId(2168);
-//		assertNotNull(matchCard2);
-//	}
-//	
-//	@Test
-//	@DirtiesContext
-//	public void syncByFixtureIdThenLoadByDbId() throws ScraperException {
-//		ssap.syncMatchcard(2168);
-//		
-//		Optional<Matchcard> optional = matchcardRepo.findById(1);
-//		Matchcard matchcard = optional.get();
-//		assertNotNull(matchcard);
-//		assertEquals(9, matchcard.getHomeTeamWins().size());
-//	}
-	
-	// @Test 
-	// @DirtiesContext
-	// public void basicPersistenceTest() {
-	// 	Matchcard m = new Matchcard();
-	// 	m.setAwayTeamName("hometeam");
-	// 	m.setFixtureId(1);
-	// 	matchcardRepo.save(m);
-	// 	Matchcard matchcard = matchcardRepo.findByFixtureId(1);
-	// 	assertEquals("hometeam", matchcard.getAwayTeamName());
-	// }
-	
-//	@Test
-//	@DirtiesContext
-//	public void syncTwice() throws ScraperException {
-//		
-//		ssap.syncMatchcard(2168);
-//		ssap.syncMatchcard(2168);
-//		assertEquals(1, matchcardRepo.count());
-//	}
 }
 

@@ -18,7 +18,10 @@
 		</encoder>
 	</appender>
 
-	<logger name="com.domloge.catholicon" level="DEBUG" />
+	<logger name="com.domloge" level="DEBUG" />
+	
+	<logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener" level="INFO" />
+	<logger name="org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module " level="INFO" />
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />

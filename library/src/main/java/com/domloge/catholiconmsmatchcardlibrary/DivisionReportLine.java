@@ -41,18 +41,18 @@ public class DivisionReportLine {
 		return teamId;
 	}
 
-	public void process(DivisionReportDataItem item) {
-		boolean homeTeam = item.getHome_team_name().equals(teamName);
+	public void process(DivisionReportDataItemProjection item) {
+		boolean homeTeam = item.getMatchCard().getHomeTeamName().equals(teamName);
 		
 		if(homeTeam) {
-			rubbers_won += item.getHome_score();
-			rubbers_lost += item.getAway_score();
-			matches_won += (item.getHome_score() > item.getAway_score() ? 1 : 0);
+			rubbers_won += item.getMatchCard().getHomeScore();
+			rubbers_lost += item.getMatchCard().getAwayScore();
+			matches_won += (item.getMatchCard().getHomeScore() > item.getMatchCard().getAwayScore() ? 1 : 0);
 		}
 		else {
-			rubbers_won += item.getAway_score();
-			rubbers_lost += item.getHome_score();
-			matches_won += (item.getAway_score() > item.getHome_score() ? 1 : 0);
+			rubbers_won += item.getMatchCard().getAwayScore();
+			rubbers_lost += item.getMatchCard().getHomeScore();
+			matches_won += (item.getMatchCard().getAwayScore() > item.getMatchCard().getHomeScore() ? 1 : 0);
 		}
 		
 		matches_played++;

@@ -1,0 +1,1 @@
+mvn clean install && cd application && .\buildCodeAndCreateNewImagesForBothArchitectures.bat && cd ..

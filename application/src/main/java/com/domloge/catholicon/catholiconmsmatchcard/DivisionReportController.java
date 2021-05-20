@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.domloge.catholiconmsmatchcardlibrary.DivisionReport;
-import com.domloge.catholiconmsmatchcardlibrary.DivisionReportDataItem;
+import com.domloge.catholiconmsmatchcardlibrary.DivisionReportDataItemProjection;
 import com.domloge.catholiconmsmatchcardlibrary.DivisionReportLine;
 
 import org.slf4j.Logger;
@@ -26,27 +26,28 @@ public class DivisionReportController {
 
 
 	@Autowired
-	private DivisionReportRepository divisionReportRepository;
+	private FixtureRepository fixtureRepository;
 	
 	@RequestMapping("/divisions/{divisionId}/report")
 	public DivisionReport getReportForDivision(@PathVariable int divisionId, @RequestParam("season") int season) {
 		
 		Map<String, DivisionReportLine> map = new HashMap<>();
 		
-		List<DivisionReportDataItem> divisionReportDataItems = divisionReportRepository.buildDivisionReport(divisionId);
+		List<DivisionReportDataItemProjection> divisionReportDataItems = fixtureRepository.buildDivisionReport(divisionId);
+		LOGGER.info("Repo found {} data items for division {} in season {}", divisionReportDataItems.size(), divisionId, season);
 		
-		for (DivisionReportDataItem item : divisionReportDataItems) {
-			if( ! map.containsKey(item.getAway_team_name())) {
-				map.put(item.getAway_team_name(), new DivisionReportLine(item.getAway_team_name(), item.getAway_team_id()));
+		for (DivisionReportDataItemProjection item : divisionReportDataItems) {
+			if( ! map.containsKey(item.getMatchCard().getAwayTeamName())) {
+				map.put(item.getMatchCard().getAwayTeamName(), new DivisionReportLine(item.getMatchCard().getAwayTeamName(), item.getAwayTeamId()));
 			}
 			
-			if( ! map.containsKey(item.getHome_team_name())) {
-				map.put(item.getHome_team_name(), new DivisionReportLine(item.getHome_team_name(), item.getHome_team_id()));
+			if( ! map.containsKey(item.getMatchCard().getHomeTeamName())) {
+				map.put(item.getMatchCard().getHomeTeamName(), new DivisionReportLine(item.getMatchCard().getHomeTeamName(), item.getHomeTeamId()));
 			}
 			
-			map.get(item.getAway_team_name()).process(item);
+			map.get(item.getMatchCard().getAwayTeamName()).process(item);
 			
-			map.get(item.getHome_team_name()).process(item);
+			map.get(item.getMatchCard().getHomeTeamName()).process(item);
 		}
 		
 		DivisionReportLine[] lines = new DivisionReportLine[map.size()];

@@ -16,5 +16,7 @@ public interface FixtureResultProjection {
 	
 	int getSeason();
 
+	String getMatchDate();
+
     MatchResultProjection getMatchCard();
 }

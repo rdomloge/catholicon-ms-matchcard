@@ -1,73 +1,67 @@
 package com.domloge.catholiconmsmatchcardlibrary;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "fixture", indexes = {
-	@Index(columnList = "externalFixtureId"),
-	@Index(columnList = "divisionId"),
-	@Index(columnList = "season")
-})
+@Document
 public class Fixture {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	private String id;
 
-	@Column(unique=true)
+	@Indexed
 	private int externalFixtureId;
 	
+	@Indexed
 	private int divisionId;
 	
 	private String matchDate;
 	
+	@Indexed
 	private int homeTeamId;
 	
+	@Indexed
 	private int awayTeamId;
+
+	private String homeTeamName;
 	
-	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "matchcard_id", referencedColumnName = "id")
+	private String awayTeamName;
+	
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "proxy"})
 	private Matchcard matchCard;
 	
+	@Indexed
 	private int season;
 	
 	
 	public Fixture() {
 	}
 
-	public Fixture(int externalFixtureId, String matchDate, int homeTeamId, int awayTeamId, int divisionId, Matchcard card, int season) {
+	public Fixture(int externalFixtureId, int divisionId, String matchDate, int homeTeamId, int awayTeamId,
+			String homeTeamName, String awayTeamName, Matchcard matchCard, int season) {
 		this.externalFixtureId = externalFixtureId;
 		this.divisionId = divisionId;
 		this.matchDate = matchDate;
 		this.homeTeamId = homeTeamId;
 		this.awayTeamId = awayTeamId;
-		this.matchCard = card;
+		this.homeTeamName = homeTeamName;
+		this.awayTeamName = awayTeamName;
+		this.matchCard = matchCard;
 		this.season = season;
 	}
-	
-	public int getId() {
+
+	public String getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -125,6 +119,22 @@ public class Fixture {
 
 	public void setSeason(int season) {
 		this.season = season;
+	}
+
+	public String getHomeTeamName() {
+		return homeTeamName;
+	}
+
+	public void setHomeTeamName(String homeTeamName) {
+		this.homeTeamName = homeTeamName;
+	}
+
+	public String getAwayTeamName() {
+		return awayTeamName;
+	}
+
+	public void setAwayTeamName(String awayTeamName) {
+		this.awayTeamName = awayTeamName;
 	}
 
 	@Override
