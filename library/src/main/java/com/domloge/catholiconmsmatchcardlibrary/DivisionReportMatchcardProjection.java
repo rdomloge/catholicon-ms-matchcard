@@ -1,6 +1,4 @@
-package com.domloge;
-
-import com.domloge.catholiconmsmatchcardlibrary.Fixture;
+package com.domloge.catholiconmsmatchcardlibrary;
 
 import org.springframework.data.rest.core.config.Projection;
 
@@ -9,11 +7,7 @@ public interface DivisionReportMatchcardProjection {
     
     int getAwayScore();
 	
-	String getAwayTeamName();
-	
 	int getHomeScore();
-	
-	String getHomeTeamName();
 	
 	String getMatchDate();
 	

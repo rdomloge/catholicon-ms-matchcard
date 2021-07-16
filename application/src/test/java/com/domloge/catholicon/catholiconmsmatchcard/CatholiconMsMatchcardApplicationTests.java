@@ -42,6 +42,11 @@ public class CatholiconMsMatchcardApplicationTests {
 	}
 
 	@Test
+	public void findRecentMatchesByTimeRange() {
+		FixtureResultProjection[] results = fixtureRepository.findResultsByTimeRange("2019-01-23T00:00:00Z", "2020-01-23T00:00:00Z");
+	}
+
+	@Test
 	public void nullDatePatternValidation() {
 		Fixture f = new Fixture();
 		fixtureRepository.save(f);

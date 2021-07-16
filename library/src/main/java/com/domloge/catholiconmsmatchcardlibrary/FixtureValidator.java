@@ -1,5 +1,6 @@
 package com.domloge.catholiconmsmatchcardlibrary;
 
+import java.time.ZonedDateTime;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -33,8 +34,8 @@ public class FixtureValidator implements Validator {
         }
     }
 
-    private boolean matchDateIsValid(String input) {
+    private boolean matchDateIsValid(ZonedDateTime input) {
         
-        return null != input && (matchDatePattern.matcher(input).matches());
+        return true;
     }
 }

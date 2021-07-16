@@ -1,7 +1,5 @@
 package com.domloge.catholiconmsmatchcardlibrary;
 
-import com.domloge.DivisionReportMatchcardProjection;
-
 import org.springframework.data.rest.core.config.Projection;
 
 @Projection(name = "divisionreportdataitem", types = { Fixture.class })
@@ -15,7 +13,11 @@ public interface DivisionReportDataItemProjection {
 	
 	int getAwayTeamId();
 	
+	String getAwayTeamName();
+	
 	int getHomeTeamId();
+	
+	String getHomeTeamName();
 
 	DivisionReportMatchcardProjection getMatchCard();
 

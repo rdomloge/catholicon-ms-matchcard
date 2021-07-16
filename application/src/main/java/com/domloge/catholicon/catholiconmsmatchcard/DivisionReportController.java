@@ -37,17 +37,17 @@ public class DivisionReportController {
 		LOGGER.info("Repo found {} data items for division {} in season {}", divisionReportDataItems.size(), divisionId, season);
 		
 		for (DivisionReportDataItemProjection item : divisionReportDataItems) {
-			if( ! map.containsKey(item.getMatchCard().getAwayTeamName())) {
-				map.put(item.getMatchCard().getAwayTeamName(), new DivisionReportLine(item.getMatchCard().getAwayTeamName(), item.getAwayTeamId()));
+			if( ! map.containsKey(item.getAwayTeamName())) {
+				map.put(item.getAwayTeamName(), new DivisionReportLine(item.getAwayTeamName(), item.getAwayTeamId()));
 			}
 			
-			if( ! map.containsKey(item.getMatchCard().getHomeTeamName())) {
-				map.put(item.getMatchCard().getHomeTeamName(), new DivisionReportLine(item.getMatchCard().getHomeTeamName(), item.getHomeTeamId()));
+			if( ! map.containsKey(item.getHomeTeamName())) {
+				map.put(item.getHomeTeamName(), new DivisionReportLine(item.getHomeTeamName(), item.getHomeTeamId()));
 			}
 			
-			map.get(item.getMatchCard().getAwayTeamName()).process(item);
+			map.get(item.getAwayTeamName()).process(item);
 			
-			map.get(item.getMatchCard().getHomeTeamName()).process(item);
+			map.get(item.getHomeTeamName()).process(item);
 		}
 		
 		DivisionReportLine[] lines = new DivisionReportLine[map.size()];
