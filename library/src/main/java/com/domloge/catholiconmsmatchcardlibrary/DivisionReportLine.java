@@ -42,7 +42,7 @@ public class DivisionReportLine {
 	}
 
 	public void process(DivisionReportDataItemProjection item) {
-		boolean homeTeam = item.getMatchCard().getHomeTeamName().equals(teamName);
+		boolean homeTeam = item.getHomeTeamName().equals(teamName);
 		
 		if(homeTeam) {
 			rubbers_won += item.getMatchCard().getHomeScore();

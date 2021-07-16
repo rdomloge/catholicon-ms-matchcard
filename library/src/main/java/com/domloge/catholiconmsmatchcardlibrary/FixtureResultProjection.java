@@ -1,5 +1,7 @@
 package com.domloge.catholiconmsmatchcardlibrary;
 
+import java.time.ZonedDateTime;
+
 import org.springframework.data.rest.core.config.Projection;
 
 @Projection(name = "fixtureresult", types = { Fixture.class })
@@ -12,11 +14,15 @@ public interface FixtureResultProjection {
 	
 	int getHomeTeamId();
 	
+	String getHomeTeamName();
+	
 	int getAwayTeamId();
+
+	String getAwayTeamName();
 	
 	int getSeason();
 
-	String getMatchDate();
+	ZonedDateTime getMatchDate();
 
     MatchResultProjection getMatchCard();
 }
