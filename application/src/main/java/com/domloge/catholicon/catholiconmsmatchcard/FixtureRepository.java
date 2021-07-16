@@ -6,17 +6,13 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import java.util.List;
 
-import javax.servlet.annotation.HttpMethodConstraint;
-
 import com.domloge.catholiconmsmatchcardlibrary.DivisionReportDataItemProjection;
 import com.domloge.catholiconmsmatchcardlibrary.Fixture;
 import com.domloge.catholiconmsmatchcardlibrary.FixtureResultProjection;
 
 @RepositoryRestResource(collectionResourceRel = "fixtures", path = "fixtures")
 @CrossOrigin("*")
-public interface FixtureRepository extends PagingAndSortingRepository<Fixture, String> {
-
-	// Fixture findById(int fixtureId); Commented out because there is no such property - only id and externalFixtureId
+public interface FixtureRepository extends PagingAndSortingRepository<Fixture, Integer> {
 
 	Fixture findByExternalFixtureId(int externalFixtureId);
 	
@@ -31,6 +27,10 @@ public interface FixtureRepository extends PagingAndSortingRepository<Fixture, S
 
 	@Query("{ 'season': ?0, $or: [{'homeTeamId': ?1}, {'awayTeamId': ?1}] }")
 	FixtureResultProjection[] findFixturesForTeam(int season, int teamId);
+
+	@Query("{ 'season': 0, 'matchCard': {$exists: true}, $or: [{'matchDate': { $gte: { $date: ?0 }, $lt: { $date: ?1 } } } ] }")
+	// @Query("{ 'season': 0, 'matchDate': { $gte: { $date: ?0 } } }")
+	FixtureResultProjection[] findResultsByTimeRange(String isoDateFrom, String isoDateTo);
 
 	Long countBySeason(int season);
 
