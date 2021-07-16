@@ -1,28 +1,36 @@
 package com.domloge.catholiconmsmatchcardlibrary;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@JsonIgnoreProperties("id")
 @Document
 public class Fixture {
-	
-	@Id
-	private String id;
 
+	@Id
 	@Indexed
 	private int externalFixtureId;
 	
 	@Indexed
 	private int divisionId;
 	
-	private String matchDate;
+	@Indexed
+	private ZonedDateTime matchDate;
 	
 	@Indexed
 	private int homeTeamId;
@@ -39,12 +47,14 @@ public class Fixture {
 	
 	@Indexed
 	private int season;
+
+	private List<Change> changes = new LinkedList<>();
 	
 	
 	public Fixture() {
 	}
 
-	public Fixture(int externalFixtureId, int divisionId, String matchDate, int homeTeamId, int awayTeamId,
+	public Fixture(int externalFixtureId, int divisionId, ZonedDateTime matchDate, int homeTeamId, int awayTeamId,
 			String homeTeamName, String awayTeamName, Matchcard matchCard, int season) {
 		this.externalFixtureId = externalFixtureId;
 		this.divisionId = divisionId;
@@ -55,14 +65,6 @@ public class Fixture {
 		this.awayTeamName = awayTeamName;
 		this.matchCard = matchCard;
 		this.season = season;
-	}
-
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public int getExternalFixtureId() {
@@ -81,11 +83,11 @@ public class Fixture {
 		this.divisionId = divisionId;
 	}
 
-	public String getMatchDate() {
+	public ZonedDateTime getMatchDate() {
 		return matchDate;
 	}
 	
-	public void setMatchDate(String matchDate) {
+	public void setMatchDate(ZonedDateTime matchDate) {
 		this.matchDate = matchDate;
 	}
 	
@@ -135,6 +137,18 @@ public class Fixture {
 
 	public void setAwayTeamName(String awayTeamName) {
 		this.awayTeamName = awayTeamName;
+	}
+
+	public List<Change> getChanges() {
+		return changes;
+	}
+
+	public void addChange(Change change) {
+		this.changes.add(change);
+	}
+
+	public void setChanges(List<Change> changes) {
+		this.changes = changes;
 	}
 
 	@Override
