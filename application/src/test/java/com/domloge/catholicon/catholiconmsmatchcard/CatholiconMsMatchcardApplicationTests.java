@@ -62,7 +62,7 @@ public class CatholiconMsMatchcardApplicationTests {
 		Matchcard m = new Matchcard();
 		m.setAwayScore(3);
 		m.setHomeScore(6);
-		f.setMatchCard(m);
+		f.setMatchcard(m);
 		byte[] bytes = mapper.writeValueAsBytes(f);
 		System.out.println("Serialised to "+new String(bytes));
 
@@ -80,7 +80,7 @@ public class CatholiconMsMatchcardApplicationTests {
 		Matchcard m = new Matchcard();
 		m.setAwayScore(2);
 		m.setHomeScore(7);
-		f.setMatchCard(m);
+		f.setMatchcard(m);
 		fixtureRepository.save(f);
 
 		Fixture wrongF = new Fixture();
@@ -89,7 +89,7 @@ public class CatholiconMsMatchcardApplicationTests {
 		Matchcard wrongM = new Matchcard();
 		wrongM.setAwayScore(9);
 		wrongM.setHomeScore(0);
-		wrongF.setMatchCard(wrongM);
+		wrongF.setMatchcard(wrongM);
 		fixtureRepository.save(wrongF);
 
 		FixtureResultProjection[] loadedFix = fixtureRepository.findByDivisionId(1);
@@ -114,7 +114,7 @@ public class CatholiconMsMatchcardApplicationTests {
 		m.setAwayScore(3);
 		m.setHomeScore(6);
 		m.setStatus(MatchcardStatus.UNCONFIRMED);
-		fUnconfirmed.setMatchCard(m);
+		fUnconfirmed.setMatchcard(m);
 		fixtureRepository.save(fUnconfirmed);
 
 		Fixture fUnconfirmedWrongSeason = new Fixture();
@@ -124,7 +124,7 @@ public class CatholiconMsMatchcardApplicationTests {
 		mWrongSeason.setAwayScore(3);
 		mWrongSeason.setHomeScore(6);
 		mWrongSeason.setStatus(MatchcardStatus.UNCONFIRMED);
-		fUnconfirmedWrongSeason.setMatchCard(mWrongSeason);
+		fUnconfirmedWrongSeason.setMatchcard(mWrongSeason);
 		fixtureRepository.save(fUnconfirmedWrongSeason);
 
 		Fixture fConfirmed = new Fixture();
@@ -134,7 +134,7 @@ public class CatholiconMsMatchcardApplicationTests {
 		mConfirmed.setAwayScore(1);
 		mConfirmed.setHomeScore(8);
 		mConfirmed.setStatus(MatchcardStatus.CONFIRMED);
-		fConfirmed.setMatchCard(mConfirmed);
+		fConfirmed.setMatchcard(mConfirmed);
 		fixtureRepository.save(fConfirmed);
 
 		System.out.println("Should get "+fixtureRepository.findByExternalFixtureId(4321));

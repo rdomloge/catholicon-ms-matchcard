@@ -19,6 +19,6 @@ public interface DivisionReportDataItemProjection {
 	
 	String getHomeTeamName();
 
-	DivisionReportMatchcardProjection getMatchCard();
+	DivisionReportMatchcardProjection getMatchcard();
 
 }

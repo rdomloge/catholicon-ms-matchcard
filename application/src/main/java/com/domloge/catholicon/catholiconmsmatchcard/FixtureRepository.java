@@ -18,7 +18,7 @@ public interface FixtureRepository extends PagingAndSortingRepository<Fixture, I
 	
 	List<Fixture> findByHomeTeamIdOrAwayTeamIdAndSeason(int homeTeamId, int awayTeamId, int season);
 	
-	@Query("{ 'matchCard': { $exists : true }, 'matchCard.status': 'UNCONFIRMED', 'season': ?0 }")
+	@Query("{ 'matchcard': { $exists : true }, 'matchcard.status': 'UNCONFIRMED', 'season': ?0 }")
 	List<Fixture> findUnconfirmedMatchcardsBySeason(int season);
 	
 	FixtureResultProjection[] findByDivisionId(int divisionId);
@@ -28,13 +28,13 @@ public interface FixtureRepository extends PagingAndSortingRepository<Fixture, I
 	@Query("{ 'season': ?0, $or: [{'homeTeamId': ?1}, {'awayTeamId': ?1}] }")
 	FixtureResultProjection[] findFixturesForTeam(int season, int teamId);
 
-	@Query("{ 'season': 0, 'matchCard': {$exists: true}, $or: [{'matchDate': { $gte: { $date: ?0 }, $lt: { $date: ?1 } } } ] }")
+	@Query("{ 'season': 0, 'matchcard': {$exists: true}, $or: [{'matchDate': { $gte: { $date: ?0 }, $lt: { $date: ?1 } } } ] }")
 	// @Query("{ 'season': 0, 'matchDate': { $gte: { $date: ?0 } } }")
 	FixtureResultProjection[] findResultsByTimeRange(String isoDateFrom, String isoDateTo);
 
 	Long countBySeason(int season);
 
-	@Query("{ 'divisionId': ?0, 'matchCard': {$exists: true}}")
+	@Query("{ 'divisionId': ?0, 'matchcard': {$exists: true}}")
 	List<DivisionReportDataItemProjection> buildDivisionReport(int divisionId);
 
 }

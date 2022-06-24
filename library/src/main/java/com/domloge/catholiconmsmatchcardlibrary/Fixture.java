@@ -13,12 +13,11 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@JsonIgnoreProperties("id")
+//@JsonIgnoreProperties("id")
 @Document
 public class Fixture {
 
@@ -43,7 +42,7 @@ public class Fixture {
 	private String awayTeamName;
 	
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "proxy"})
-	private Matchcard matchCard;
+	private Matchcard matchcard;
 	
 	@Indexed
 	private int season;
@@ -55,7 +54,7 @@ public class Fixture {
 	}
 
 	public Fixture(int externalFixtureId, int divisionId, ZonedDateTime matchDate, int homeTeamId, int awayTeamId,
-			String homeTeamName, String awayTeamName, Matchcard matchCard, int season) {
+			String homeTeamName, String awayTeamName, Matchcard matchcard, int season) {
 		this.externalFixtureId = externalFixtureId;
 		this.divisionId = divisionId;
 		this.matchDate = matchDate;
@@ -63,7 +62,7 @@ public class Fixture {
 		this.awayTeamId = awayTeamId;
 		this.homeTeamName = homeTeamName;
 		this.awayTeamName = awayTeamName;
-		this.matchCard = matchCard;
+		this.matchcard = matchcard;
 		this.season = season;
 	}
 
@@ -107,12 +106,12 @@ public class Fixture {
 		this.awayTeamId = awayTeamId;
 	}
 	
-	public Matchcard getMatchCard() {
-		return matchCard;
+	public Matchcard getMatchcard() {
+		return matchcard;
 	}
 
-	public void setMatchCard(Matchcard matchCard) {
-		this.matchCard = matchCard;
+	public void setMatchcard(Matchcard matchcard) {
+		this.matchcard = matchcard;
 	}
 
 	public int getSeason() {

@@ -24,5 +24,5 @@ public interface FixtureResultProjection {
 
 	ZonedDateTime getMatchDate();
 
-    MatchResultProjection getMatchCard();
+    MatchResultProjection getMatchcard();
 }

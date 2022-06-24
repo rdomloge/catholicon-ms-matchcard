@@ -18,12 +18,12 @@
 		</encoder>
 	</appender>
 
-	<logger name="com.domloge" level="DEBUG" />
+	<logger name="com.domloge" level="${MY_DEBUG_LEVEL}" />
 	
 	<logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener" level="INFO" />
 	<logger name="org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module " level="INFO" />
 
-	<root level="INFO">
+	<root level="${DEBUG_LEVEL}">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>
